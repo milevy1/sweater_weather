@@ -15,12 +15,12 @@ class FlickrService
   def response
     @_response ||= conn.get do |req|
       req.params['format'] = 'json'
+      req.params['nojsoncallback'] = '1'
       req.params['tags'] = "#{location},#{filters}"
     end
   end
 
   def background_url
-    # Parses out first 15 chars 'jsonFlickrFeed(' and removes trailing ')'
-    JSON.parse(response.body[15..-2])['items'][0]['media']['m']
+    JSON.parse(response.body)['items'][0]['media']['m']
   end
 end
