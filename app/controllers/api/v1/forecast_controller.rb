@@ -2,7 +2,7 @@ class Api::V1::ForecastController < ApplicationController
   def show
     forecast = Forecast.find_by(city_state: params['location'].downcase)
 
-    unless forecast
+    if forecast.nil?
       latitude = google_maps_service.latitude
       longitude = google_maps_service.longitude
 
@@ -15,6 +15,11 @@ class Api::V1::ForecastController < ApplicationController
         long: longitude,
         details: darksky_service(latitude, longitude).details
       )
+    elsif forecast.updated_at < (Time.now - 2.hours.seconds)
+      latitude = forecast.lat
+      longitude = forecast.long
+      forecast.details = darksky_service(latitude, longitude).details
+      forecast.save
     end
 
     render json: ForecastSerializer.new(forecast)
