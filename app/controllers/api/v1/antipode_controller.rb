@@ -1,21 +1,15 @@
 class Api::V1::AntipodeController < ApplicationController
   def show
-    expected = {
-              	"data": [{
-              		"id": "1",
-              		"type": "antipode",
-              		"attributes": {
-              			"location_name": antipode_google_service.formatted_address,
-              			"forecast": {
-              				"summary": dark_sky_service.forecast_summary,
-              				"current_temperature": dark_sky_service.forecast_temperature
-              			},
-              			"search_location": search_google_service.formatted_address
-              		}
-              	}]
-              }
+    antipode = AntipodeSerializer.new(
+      {
+        search_location: search_google_service.formatted_address,
+        antipode_location: antipode_google_service.formatted_address,
+        antipode_forecast_summary: dark_sky_service.forecast_summary,
+        antipode_forecast_temperature: dark_sky_service.forecast_temperature
+      }
+    )
 
-    render json: expected
+    render json: antipode.json
   end
 
   private
