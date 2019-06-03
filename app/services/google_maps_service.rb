@@ -41,4 +41,8 @@ class GoogleMapsService
   def country
     JSON.parse(response.body)['results'][0]['address_components'].last['long_name']
   end
+
+  def formatted_address
+    JSON.parse(response.body)['results'][0]['formatted_address']
+  end
 end
