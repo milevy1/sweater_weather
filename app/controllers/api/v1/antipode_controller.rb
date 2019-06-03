@@ -1,12 +1,5 @@
 class Api::V1::AntipodeController < ApplicationController
   def show
-    dark_sky_service = DarkSkyService.new(
-      amypode_service.antipode_lat, amypode_service.antipode_long)
-    antipode_forecast = dark_sky_service.details
-
-    antipode_forecast_summary = antipode_forecast['currently']['summary']
-    antipode_forecast_temperature = antipode_forecast['currently']['temperature'].to_s
-
     expected = {
               	"data": [{
               		"id": "1",
@@ -14,8 +7,8 @@ class Api::V1::AntipodeController < ApplicationController
               		"attributes": {
               			"location_name": antipode_google_service.formatted_address,
               			"forecast": {
-              				"summary": antipode_forecast_summary,
-              				"current_temperature": antipode_forecast_temperature
+              				"summary": dark_sky_service.forecast_summary,
+              				"current_temperature": dark_sky_service.forecast_temperature
               			},
               			"search_location": search_google_service.formatted_address
               		}
@@ -38,5 +31,10 @@ class Api::V1::AntipodeController < ApplicationController
     def antipode_google_service
       @_antipode_google_service ||= GoogleMapsService.new(
         "#{amypode_service.antipode_lat},#{amypode_service.antipode_long}")
+    end
+
+    def dark_sky_service
+      @_dark_sky_service ||= DarkSkyService.new(
+        amypode_service.antipode_lat, amypode_service.antipode_long)
     end
 end

@@ -19,4 +19,12 @@ class DarkSkyService
   def details
     JSON.parse(response.body)
   end
+
+  def forecast_summary
+    details['currently']['summary']
+  end
+
+  def forecast_temperature
+    details['currently']['temperature'].to_s
+  end
 end
