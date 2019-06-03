@@ -1,23 +1,7 @@
 class Api::V1::AntipodeController < ApplicationController
   def show
-    amy_conn = Faraday.new('http://amypode.herokuapp.com/api/v1/antipodes') do |f|
-      f.adapter Faraday.default_adapter
-      f.headers['api_key'] = ENV['antipode_api_key']
-    end
-
-    amy_response = amy_conn.get do |req|
-      req.params['lat'] = search_google_service.latitude
-      req.params['long'] = search_google_service.longitude
-    end
-
-    antipode_coordinates = JSON.parse(amy_response.body)['data']['attributes']
-    antipode_lat = antipode_coordinates['lat'].to_s
-    antipode_long = antipode_coordinates['long'].to_s
-
-    antipode_google_service = GoogleMapsService.new("#{antipode_lat},#{antipode_long}")
-    antipode_location = antipode_google_service.formatted_address
-
-    dark_sky_service = DarkSkyService.new(antipode_lat, antipode_long)
+    dark_sky_service = DarkSkyService.new(
+      amypode_service.antipode_lat, amypode_service.antipode_long)
     antipode_forecast = dark_sky_service.details
 
     antipode_forecast_summary = antipode_forecast['currently']['summary']
@@ -28,7 +12,7 @@ class Api::V1::AntipodeController < ApplicationController
               		"id": "1",
               		"type": "antipode",
               		"attributes": {
-              			"location_name": antipode_location,
+              			"location_name": antipode_google_service.formatted_address,
               			"forecast": {
               				"summary": antipode_forecast_summary,
               				"current_temperature": antipode_forecast_temperature
@@ -43,6 +27,16 @@ class Api::V1::AntipodeController < ApplicationController
 
   private
     def search_google_service
-      @_search_google_service = GoogleMapsService.new(params['loc'])
+      @_search_google_service ||= GoogleMapsService.new(params['loc'])
+    end
+
+    def amypode_service
+      @_amypode_service ||= AmypodeService.new(
+        search_google_service.latitude, search_google_service.longitude)
+    end
+
+    def antipode_google_service
+      @_antipode_google_service ||= GoogleMapsService.new(
+        "#{amypode_service.antipode_lat},#{amypode_service.antipode_long}")
     end
 end
