@@ -28,6 +28,10 @@ namespace :update do
           puts "Error creating Forecast for #{city_state}."
         end
       end
+      
+      # Reset service connection for next city_state
+      @_google_maps_service = nil
+      @_dark_sky_service = nil
     end
   end
 
