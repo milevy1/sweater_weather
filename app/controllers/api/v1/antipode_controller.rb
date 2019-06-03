@@ -24,6 +24,27 @@ class Api::V1::AntipodeController < ApplicationController
     antipode_google_service = GoogleMapsService.new("#{antipode_lat},#{antipode_long}")
     antipode_location = antipode_google_service.formatted_address
 
-    require "pry"; binding.pry
+    dark_sky_service = DarkSkyService.new(antipode_lat, antipode_long)
+    antipode_forecast = dark_sky_service.details
+
+    antipode_forecast_summary = antipode_forecast['currently']['summary']
+    antipode_forecast_temperature = antipode_forecast['currently']['temperature'].to_s
+
+    expected = {
+              	"data": [{
+              		"id": "1",
+              		"type": "antipode",
+              		"attributes": {
+              			"location_name": antipode_location,
+              			"forecast": {
+              				"summary": antipode_forecast_summary,
+              				"current_temperature": antipode_forecast_temperature
+              			},
+              			"search_location": search_location
+              		}
+              	}]
+              }
+
+    render json: expected
   end
 end
