@@ -28,7 +28,7 @@ describe 'Users API Endpoint' do
       expect(response.status).to eq(400)
 
       json_response = JSON.parse(response.body)
-      expect(json_response).to eq({ error: 'Failed to save new user.' })
+      expect(json_response).to eq({ 'error' => 'Failed to save new user.' })
     end
   end
 end
