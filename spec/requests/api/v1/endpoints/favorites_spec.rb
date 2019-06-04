@@ -40,4 +40,48 @@ describe 'Favorites API endpoint' do
       expect(response.status).to eq(401)
     end
   end
+
+  describe 'GET /api/v1/favorites' do
+    it 'returns weather forecasts for a user favorites' do
+      user = User.create(
+                  email: 'email',
+                  password_digest: 'password',
+                  api_key: 'api_key')
+
+      forecast = Forecast.create(
+        city: 'Denver',
+        state: 'CO',
+        city_state: 'denver,co',
+        country: 'United States',
+        lat: '1',
+        long: '1',
+        details: 'Darksky Details'
+      )
+
+      Favorite.create(user_id: user.id, forecast_id: forecast.id, location: 'denver,co')
+
+      valid_params = { "api_key": "api_key" }
+
+      get '/api/v1/favorites', params: valid_params
+
+      expect(response).to be_successful
+      expect(response.status).to eq(200)
+
+      json_response = JSON.parse(response.body)
+
+      expect(json_response[0]['location']).to be_present
+      expect(json_response[0]['current_weather']).to be_present
+    end
+
+    it 'errors if invalid api key' do
+      invalid_params = {
+                  "api_key": "invalid_api_key"
+                }
+
+      post '/api/v1/sessions', params: invalid_params
+
+      expect(response).to_not be_successful
+      expect(response.status).to eq(401)
+    end
+  end
 end
