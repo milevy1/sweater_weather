@@ -10,10 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_06_03_215844) do
+ActiveRecord::Schema.define(version: 2019_06_04_015800) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "favorites", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "forecast_id"
+    t.string "location"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["forecast_id"], name: "index_favorites_on_forecast_id"
+    t.index ["user_id"], name: "index_favorites_on_user_id"
+  end
 
   create_table "forecasts", force: :cascade do |t|
     t.string "city"
@@ -35,4 +45,6 @@ ActiveRecord::Schema.define(version: 2019_06_03_215844) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "favorites", "forecasts"
+  add_foreign_key "favorites", "users"
 end
