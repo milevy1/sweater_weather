@@ -41,5 +41,3 @@ describe 'Favorites API endpoint' do
     end
   end
 end
-# Remove location blank space
-# a.gsub(/\s+/, '').downcase

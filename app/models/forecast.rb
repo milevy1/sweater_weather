@@ -13,7 +13,6 @@ class Forecast < ApplicationRecord
     longitude = @_google_maps_service.longitude
     @_dark_sky_service ||= DarkSkyService.new(latitude, longitude)
 
-
     Forecast.create(
       city: @_google_maps_service.city,
       state: @_google_maps_service.state,
@@ -23,5 +22,11 @@ class Forecast < ApplicationRecord
       long: longitude,
       details: @_dark_sky_service.details
     )
+  end
+
+  def update_details
+    dark_sky_service ||= DarkSkyService.new(lat, long)
+    self.details = dark_sky_service.details
+    self.save
   end
 end
