@@ -14,12 +14,4 @@ class Api::V1::ForecastController < ApplicationController
     def forecast_params
       params.permit(:location)
     end
-
-    def google_maps_service
-      @_google_maps_service ||= GoogleMapsService.new(params['location'])
-    end
-
-    def darksky_service(latitude, longitude)
-      @_dark_sky_service ||= DarkSkyService.new(latitude, longitude)
-    end
 end

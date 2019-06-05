@@ -7,6 +7,7 @@ Rails.application.routes.draw do
       post '/users', to: 'users#create'
       post '/favorites', to: 'favorites#create'
       get '/favorites', to: 'favorites#index'
+      delete '/favorites', to: 'favorites#destroy'
       post '/sessions', to: 'sessions#create'
     end
   end
