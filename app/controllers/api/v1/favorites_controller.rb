@@ -26,6 +26,18 @@ class Api::V1::FavoritesController < ActionController::API
     end
   end
 
+  def destroy
+    user = User.find_by(api_key: favorite_params[:api_key])
+    favorite = user.favorites.find_by(location: favorite_params[:location]) if user
+
+    if user && favorite
+      favorite.destroy
+      render json: FavoritesSerializer.new(user).to_json, status: 200
+    else
+      render json: { error: 'Unauthorized' }, status: 401
+    end
+  end
+
   private
     def favorite_params
       params.permit(:location, :api_key)
